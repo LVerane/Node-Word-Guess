@@ -5,52 +5,79 @@ var wordPool = ["Titanic", "Frozen", "Ratatouille"]
 var randomPosition = Math.floor(Math.random() * 3)
 var wordToGuess = wordPool[randomPosition]
 
-var unknownWord = new Word(wordToGuess)
+// var unknownWord = new Word(wordToGuess)
+var unknownWord = new Word()
+unknownWord.makeLetter(wordToGuess)
+
 console.log(unknownWord)
 console.log("----------------")
 
-var printToScreen = [];
+// var printToScreen = [];
+var chances = 5;
+// var correctGuess;
+// var wasGuessed;
+// var wrongGuesses = [];
+// var test;
 
 function printArrayToScreen() {
-    printToScreen = [];//resets it every time
+    var printToScreen = [];//resets it every time
     for (var i = 0; i < unknownWord.wordArray.length; i++) {
-        if (unknownWord.wordArray[i].isUsed === true) {
-            printToScreen.push(unknownWord.wordArray[i].character)
-        } else {
-            printToScreen.push("_")
-        }
+        unknownWord.wordArray[i].showCharacter(printToScreen);
+        // if (unknownWord.wordArray[i].isUsed === true) {
+        //     printToScreen.push(unknownWord.wordArray[i].character)
+        // } else {
+        //     printToScreen.push("_")
+        // }
+        // console.log(test)
     }
-    if(printToScreen.join("") === wordToGuess){
+    // console.log(printToScreen.join(" "))
+    if (printToScreen.join("") === wordToGuess) {
         console.log("Congratulations, you got it!")
-    }else{
+    } else {
+        console.log("this is in index")
         console.log(printToScreen.join(" "))
+        // console.log(wrongGuesses.join(" "))
         callInquirer()
     }
 }
 
 printArrayToScreen()
 // console.log(unknownWord.answer.split(""))
-function callInquirer(){
-inquirer
-    .prompt([
-        {
-            name: "userGuess",
-            message: "Guess a letter",
-        }
-    ])
-    .then(function (answer) {
-        for (var i = 0; i < unknownWord.wordArray.length; i++) {
-            // console.log("this is a test")
-            // console.log("."+answer.userGuess+".")
-            // console.log("."+unknownWord.wordArray[i].character+".")
-            if(answer.userGuess.toLowerCase() === unknownWord.wordArray[i].character.toLowerCase()){
-                // console.log("this works")
-                unknownWord.wordArray[i].isUsed = true;
+function callInquirer() {
+    inquirer
+        .prompt([
+            {
+                name: "userGuess",
+                message: "Guess a letter",
             }
-        }
-        printArrayToScreen()
-        // callInquirer()
-    });
+        ])
+        .then(function (answer) {
+            // var duplicateLetter = unknownWord.checkAll(answer.userGuess);
+            // console.log(unknownWord.duplicateLetter)
+            if (unknownWord.checkAll(answer.userGuess)) {
+                console.log(unknownWord.allGuesses.join(" "))
+                var correctGuess = false;
+                for (var i = 0; i < unknownWord.wordArray.length; i++) {
+                    if (answer.userGuess.toLowerCase() === unknownWord.wordArray[i].character.toLowerCase()) {
+                        unknownWord.wordArray[i].isUsed = true;
+                        correctGuess = true;
+                    }
+                }
+                if (correctGuess === false) {
+                    chances--;
+                    // wrongGuesses.push(answer.userGuess.toLowerCase())
+                }
+                if (chances === 0) {
+                    console.log("You Lost")
+                } else {
+                    printArrayToScreen()
+                }
+            } else {
+                console.log("You already tried that. Try something else")
+                callInquirer()
+            }
+        });
 }
 
 // callInquirer()
+
